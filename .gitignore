@@ -1,0 +1,54 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Environment Variables & Secrets (CRITICAL: Do not commit API keys)
+.env
+.env.local
+.env.*.local
+*.env
+
+# Virtual Environments
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Local Storage Subsystem (Generated Audio, Video, Segments & SQLite DB)
+storage/*/*
+!storage/*/.gitkeep
+storage/test_gen/
+storage/temp/
+storage/*.db
+storage/*.sqlite
+storage/*.sqlite3
+storage/*.wav
+storage/*.mp3
+storage/*.mp4
+*.wav
+*.mp3
+*.mp4
+*.m4a
+*.flac
+*.ogg
+*.webm
+*.avi
+*.mov
+
+# IDEs & System Files
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Temporary Files, Logs & Agent artifacts
+*.log
+scratch/
+.system_generated/
