@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DubFlow AI — Professional AI Video Dubbing Platform</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#EEF2FF',
+                            100: '#E0E7FF',
+                            500: '#6366F1',
+                            600: '#4F46E5',
+                            700: '#4338CA',
+                            900: '#312E81',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body class="bg-[#090D16] text-gray-100 min-h-screen flex flex-col antialiased selection:bg-indigo-500 selection:text-white">
+
+    <!-- Top Navigation -->
+    <header class="sticky top-0 z-40 border-b border-white/10 bg-[#090D16]/80 backdrop-blur-xl">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <!-- Brand Logo -->
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="window.location.reload()">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-violet-500 to-cyan-400 p-0.5 shadow-lg shadow-indigo-500/20 flex items-center justify-center">
+                    <div class="w-full h-full bg-[#090D16] rounded-[10px] flex items-center justify-center">
+                        <i data-lucide="waves" class="w-5 h-5 text-indigo-400"></i>
+                    </div>
+                </div>
+                <div>
+                    <div class="flex items-center space-x-2">
+                        <span class="font-extrabold text-lg tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-gray-200 to-indigo-300">DubFlow AI</span>
+                        <span class="px-2 py-0.5 text-[10px] font-bold tracking-wide uppercase rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">SaaS v1.0</span>
+                    </div>
+                    <p class="text-[11px] text-gray-400 font-medium">Next-Gen Multi-Speaker Video Dubbing</p>
+                </div>
+            </div>
+
+            <!-- Header Actions -->
+            <div class="flex items-center space-x-3">
+                <!-- Project Selector Dropdown -->
+                <div class="relative hidden sm:block">
+                    <select id="project-selector" class="glass-input text-xs rounded-lg px-3 py-1.5 pr-8 appearance-none cursor-pointer focus:ring-1 focus:ring-indigo-500 text-gray-300">
+                        <option value="">Select Project...</option>
+                    </select>
+                    <i data-lucide="chevron-down" class="w-3.5 h-3.5 absolute right-2.5 top-2.5 text-gray-400 pointer-events-none"></i>
+                </div>
+
+                <button id="btn-new-project" class="text-xs px-3 py-1.5 rounded-lg border border-white/10 hover:bg-white/5 transition flex items-center space-x-1.5 text-gray-300">
+                    <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                    <span>New Project</span>
+                </button>
+
+                <!-- System Health Diagnostics Button -->
+                <button id="btn-open-diagnostics" class="text-xs px-3 py-1.5 rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/30 text-indigo-300 transition flex items-center space-x-2">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <i data-lucide="activity" class="w-3.5 h-3.5"></i>
+                    <span class="font-medium">System Health</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+        <!-- SECTION 1: UPLOAD & CONFIGURATION -->
+        <section id="section-upload" class="space-y-6">
+            <div class="text-center max-w-2xl mx-auto space-y-2">
+                <h1 class="text-3xl font-extrabold tracking-tight sm:text-4xl text-white">
+                    Transform Any Video Into <span class="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 via-violet-400 to-cyan-400">Multi-Speaker Dubbed Audio</span>
+                </h1>
+                <p class="text-sm text-gray-400">
+                    Automatic speaker diarization, Whisper ASR, NVIDIA context-aware translation, synchronized neural voice synthesis, and background music preservation.
+                </p>
+            </div>
+
+            <!-- Upload Card -->
+            <div class="glass-panel rounded-2xl p-8 max-w-3xl mx-auto shadow-2xl relative overflow-hidden border border-white/10">
+                <div class="absolute -top-24 -right-24 w-64 h-64 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="absolute -bottom-24 -left-24 w-64 h-64 bg-violet-600/10 rounded-full blur-3xl pointer-events-none"></div>
+
+                <div class="space-y-6">
+                    <!-- Drop Zone -->
+                    <div id="drop-zone" class="border-2 border-dashed border-indigo-500/30 hover:border-indigo-400 rounded-xl p-8 text-center transition-all cursor-pointer bg-slate-900/40 hover:bg-slate-900/60 group">
+                        <input type="file" id="video-file-input" accept=".mp4,.mov,.avi,.mkv,.webm" class="hidden">
+                        <div class="w-16 h-16 mx-auto rounded-2xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center group-hover:scale-110 transition duration-300 border border-indigo-500/20">
+                            <i data-lucide="video" class="w-8 h-8"></i>
+                        </div>
+                        <div class="mt-4 space-y-1">
+                            <p class="text-base font-semibold text-gray-200">
+                                Drop your video here, or <span class="text-indigo-400 underline decoration-indigo-400/30 underline-offset-4">browse files</span>
+                            </p>
+                            <p class="text-xs text-gray-400">Supports MP4, MOV, MKV, AVI, WEBM up to 2 GB</p>
+                        </div>
+                        <div id="selected-file-display" class="hidden mt-4 inline-flex items-center space-x-2 px-4 py-2 rounded-lg bg-indigo-500/20 border border-indigo-500/30 text-indigo-200 text-xs font-mono">
+                            <i data-lucide="file-check" class="w-4 h-4 text-indigo-400"></i>
+                            <span id="selected-filename">sample_video.mp4</span>
+                            <span id="selected-filesize" class="text-gray-400">(14.2 MB)</span>
+                        </div>
+                    </div>
+
+                    <!-- Dubbing Configuration Form -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-medium text-gray-300 mb-1.5 flex items-center space-x-1.5">
+                                <i data-lucide="globe" class="w-3.5 h-3.5 text-indigo-400"></i>
+                                <span>Target Dubbing Language</span>
+                            </label>
+                            <select id="target-language-select" class="glass-input w-full rounded-lg px-3 py-2 text-sm text-gray-200">
+                                <option value="French">🇫🇷 French (Français)</option>
+                                <option value="Spanish">🇪🇸 Spanish (Español)</option>
+                                <option value="Arabic">🇸🇦 Arabic (العربية)</option>
+                                <option value="German">🇩🇪 German (Deutsch)</option>
+                                <option value="Turkish">🇹🇷 Turkish (Türkçe)</option>
+                                <option value="Portuguese">🇧🇷 Portuguese (Português)</option>
+                                <option value="Italian">🇮🇹 Italian (Italiano)</option>
+                                <option value="English">🇺🇸 English</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-medium text-gray-300 mb-1.5 flex items-center space-x-1.5">
+                                <i data-lucide="mic" class="w-3.5 h-3.5 text-indigo-400"></i>
+                                <span>Source Language</span>
+                            </label>
+                            <select id="source-language-select" class="glass-input w-full rounded-lg px-3 py-2 text-sm text-gray-200">
+                                <option value="English">Auto-Detect / English</option>
+                                <option value="French">French</option>
+                                <option value="Spanish">Spanish</option>
+                                <option value="German">German</option>
+                                <option value="Arabic">Arabic</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Action Button -->
+                    <div class="pt-2">
+                        <button id="btn-upload-analyze" class="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 font-semibold text-sm text-white shadow-lg shadow-indigo-600/30 transition duration-200 flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                            <i data-lucide="sparkles" class="w-4 h-4"></i>
+                            <span>Upload & Analyze Video</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: VIDEO PREVIEW & PROJECT INFO -->
+        <section id="section-project-view" class="hidden space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Video Player Column -->
+                <div class="lg:col-span-8 space-y-4">
+                    <div class="glass-panel rounded-2xl p-4 border border-white/10 shadow-xl overflow-hidden">
+                        <div class="flex items-center justify-between pb-3 border-b border-white/5 mb-3">
+                            <div class="flex items-center space-x-2">
+                                <i data-lucide="film" class="w-4 h-4 text-indigo-400"></i>
+                                <h3 id="current-project-name" class="text-sm font-semibold text-gray-200">Video Preview</h3>
+                            </div>
+                            <span id="project-status-badge" class="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">Ready</span>
+                        </div>
+                        <div class="relative bg-black rounded-xl overflow-hidden aspect-video flex items-center justify-center group">
+                            <video id="main-video-player" class="w-full h-full object-contain" controls>
+                                Your browser does not support HTML5 video.
+                            </video>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project Info & Dubbing Controls Column -->
+                <div class="lg:col-span-4 space-y-4">
+                    <div class="glass-panel rounded-2xl p-6 border border-white/10 shadow-xl space-y-6">
+                        <div class="flex items-center justify-between border-b border-white/5 pb-3">
+                            <h3 class="text-sm font-bold text-gray-100 flex items-center space-x-2">
+                                <i data-lucide="sliders" class="w-4 h-4 text-indigo-400"></i>
+                                <span>Project Overview</span>
+                            </h3>
+                            <span id="stat-speakers-pill" class="text-xs px-2 py-0.5 rounded-md bg-violet-500/20 text-violet-300 border border-violet-500/30">0 Speakers</span>
+                        </div>
+
+                        <!-- Metadata Specs -->
+                        <div class="grid grid-cols-2 gap-3 text-xs">
+                            <div class="bg-slate-900/50 p-3 rounded-lg border border-white/5">
+                                <span class="text-gray-400 block mb-0.5">Duration</span>
+                                <span id="stat-duration" class="font-mono text-gray-200 font-semibold">00:00:00</span>
+                            </div>
+                            <div class="bg-slate-900/50 p-3 rounded-lg border border-white/5">
+                                <span class="text-gray-400 block mb-0.5">Resolution</span>
+                                <span id="stat-resolution" class="font-mono text-gray-200 font-semibold">1920x1080</span>
+                            </div>
+                            <div class="bg-slate-900/50 p-3 rounded-lg border border-white/5">
+                                <span class="text-gray-400 block mb-0.5">Source Lang</span>
+                                <span id="stat-source-lang" class="font-medium text-gray-200">English</span>
+                            </div>
+                            <div class="bg-slate-900/50 p-3 rounded-lg border border-white/5">
+                                <span class="text-gray-400 block mb-0.5">Target Lang</span>
+                                <span id="stat-target-lang" class="font-medium text-indigo-300 font-semibold">French</span>
+                            </div>
+                        </div>
+
+                        <!-- Audio Mixing & Suppression Controls -->
+                        <div class="space-y-4 border-t border-white/5 pt-4">
+                            <h4 class="text-xs font-semibold text-gray-300 uppercase tracking-wider">Audio Mixing Settings</h4>
+                            
+                            <!-- Dialogue Volume Slider -->
+                            <div class="space-y-1">
+                                <div class="flex justify-between text-xs text-gray-300">
+                                    <span>Dialogue Volume</span>
+                                    <span id="val-dialogue-vol" class="font-mono text-indigo-400">100%</span>
+                                </div>
+                                <input type="range" id="slider-dialogue-vol" min="0" max="2" step="0.05" value="1.0" class="w-full h-1.5 bg-slate-800 rounded-lg cursor-pointer">
+                            </div>
+
+                            <!-- Music / SFX Volume Slider -->
+                            <div class="space-y-1">
+                                <div class="flex justify-between text-xs text-gray-300">
+                                    <span>Background Music / SFX</span>
+                                    <span id="val-music-vol" class="font-mono text-indigo-400">85%</span>
+                                </div>
+                                <input type="range" id="slider-music-vol" min="0" max="1.5" step="0.05" value="0.85" class="w-full h-1.5 bg-slate-800 rounded-lg cursor-pointer">
+                            </div>
+
+                            <!-- Vocal Suppression Slider -->
+                            <div class="space-y-1">
+                                <div class="flex justify-between text-xs text-gray-300">
+                                    <span>Original Vocal Suppression</span>
+                                    <span id="val-suppression" class="font-mono text-indigo-400">100%</span>
+                                </div>
+                                <input type="range" id="slider-suppression" min="0" max="1.0" step="0.05" value="1.0" class="w-full h-1.5 bg-slate-800 rounded-lg cursor-pointer">
+                            </div>
+                        </div>
+
+                        <!-- Primary Action Buttons -->
+                        <div class="space-y-2 pt-2">
+                            <button id="btn-start-dubbing" class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 font-semibold text-sm text-white shadow-lg shadow-emerald-600/20 transition flex items-center justify-center space-x-2">
+                                <i data-lucide="play-circle" class="w-4 h-4"></i>
+                                <span>Start Dubbing</span>
+                            </button>
+
+                            <button id="btn-reanalyze" class="w-full py-2 px-4 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 text-xs font-medium text-gray-300 border border-white/5 transition flex items-center justify-center space-x-1.5">
+                                <i data-lucide="refresh-cw" class="w-3.5 h-3.5 text-gray-400"></i>
+                                <span>Re-Analyze Video</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 3: REAL-TIME PROCESSING STEPPER -->
+            <div id="processing-card" class="hidden glass-panel rounded-2xl p-6 border border-indigo-500/30 shadow-2xl relative overflow-hidden bg-slate-900/90">
+                <div class="space-y-6">
+                    <div class="flex items-center justify-between border-b border-white/10 pb-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-8 h-8 rounded-lg bg-indigo-500/20 flex items-center justify-center text-indigo-400 animate-spin">
+                                <i data-lucide="loader-2" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-bold text-gray-100">Processing Video Pipeline</h3>
+                                <p id="processing-stage-label" class="text-xs text-indigo-300">Executing stage...</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <span id="processing-percent" class="text-2xl font-black text-indigo-400 font-mono">0%</span>
+                        </div>
+                    </div>
+
+                    <!-- Progress Bar -->
+                    <div class="w-full bg-slate-800 rounded-full h-2.5 overflow-hidden">
+                        <div id="processing-progress-bar" class="bg-gradient-to-r from-indigo-500 to-violet-500 h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+                    </div>
+
+                    <!-- Step Checklist Grid -->
+                    <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 text-xs" id="stepper-checklist">
+                        <div id="step-upload" class="p-2.5 rounded-lg bg-slate-800/50 border border-white/5 flex items-center space-x-2">
+                            <span class="step-icon text-gray-500">○</span>
+                            <span class="text-gray-300">Upload</span>
+                        </div>
+                        <div id="step-extract" class="p-2.5 rounded-lg bg-slate-800/50 border border-white/5 flex items-center space-x-2">
+                            <span class="step-icon text-gray-500">○</span>
+                            <span class="text-gray-300">Extract Audio</span>
+                        </div>
+                        <div id="step-diarization" class="p-2.5 rounded-lg bg-slate-800/50 border border-white/5 flex items-center space-x-2">
+                            <span class="step-icon text-gray-500">○</span>
+                            <span class="text-gray-300">Diarization</span>
+                        </div>
+                        <div id="step-transcribe" class="p-2.5 rounded-lg bg-slate-800/50 border border-white/5 flex items-center space-x-2">
+                            <span class="step-icon text-gray-500">○</span>
+                            <span class="text-gray-300">Transcribe</span>
+                        </div>
+                        <div id="step-translate" class="p-2.5 rounded-lg bg-slate-800/50 border border-white/5 flex items-center space-x-2">
+                            <span class="step-icon text-gray-500">○</span>
+                            <span class="text-gray-300">Translate</span>
+                        </div>
+                        <div id="step-tts" class="p-2.5 rounded-lg bg-slate-800/50 border border-white/5 flex items-center space-x-2">
+                            <span class="step-icon text-gray-500">○</span>
+                            <span class="text-gray-300">AI Voices</span>
+                        </div>
+                        <div id="step-sync" class="p-2.5 rounded-lg bg-slate-800/50 border border-white/5 flex items-center space-x-2">
+                            <span class="step-icon text-gray-500">○</span>
+                            <span class="text-gray-300">Timing Sync</span>
+                        </div>
+                        <div id="step-mix" class="p-2.5 rounded-lg bg-slate-800/50 border border-white/5 flex items-center space-x-2">
+                            <span class="step-icon text-gray-500">○</span>
+                            <span class="text-gray-300">Mix Soundtrack</span>
+                        </div>
+                        <div id="step-render" class="p-2.5 rounded-lg bg-slate-800/50 border border-white/5 flex items-center space-x-2">
+                            <span class="step-icon text-gray-500">○</span>
+                            <span class="text-gray-300">Render Video</span>
+                        </div>
+                        <div id="step-complete" class="p-2.5 rounded-lg bg-slate-800/50 border border-white/5 flex items-center space-x-2">
+                            <span class="step-icon text-gray-500">○</span>
+                            <span class="text-gray-300">Completed</span>
+                        </div>
+                    </div>
+
+                    <!-- Live Log Console Drawer -->
+                    <div class="bg-black/60 rounded-xl p-3 border border-white/5 space-y-1">
+                        <div class="flex items-center justify-between text-[11px] text-gray-400 font-mono pb-1 border-b border-white/5">
+                            <span class="flex items-center space-x-1.5">
+                                <i data-lucide="terminal" class="w-3.5 h-3.5 text-indigo-400"></i>
+                                <span>Real-Time Backend Event Stream</span>
+                            </span>
+                            <span id="log-count">0 events</span>
+                        </div>
+                        <div id="log-stream-container" class="h-28 overflow-y-auto font-mono text-[11px] text-gray-300 space-y-1 pt-1">
+                            <p class="text-gray-500 italic">Waiting for events...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 4: SPEAKER VOICE PROFILES (Section 17) -->
+            <div id="speakers-card" class="glass-panel rounded-2xl p-6 border border-white/10 shadow-xl space-y-4">
+                <div class="flex items-center justify-between border-b border-white/5 pb-3">
+                    <div class="space-y-0.5">
+                        <h3 class="text-base font-bold text-gray-100 flex items-center space-x-2">
+                            <i data-lucide="users" class="w-4 h-4 text-violet-400"></i>
+                            <span>Speaker Voice Profiles</span>
+                        </h3>
+                        <p class="text-xs text-gray-400">Unique vocal identities detected automatically. Assign custom neural voices and rename characters.</p>
+                    </div>
+                </div>
+
+                <div id="speakers-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- Dynamic Speaker Cards rendered here -->
+                </div>
+            </div>
+
+            <!-- SECTION 5: INTERACTIVE TRANSCRIPT EDITOR (Section 18) -->
+            <div id="transcript-card" class="glass-panel rounded-2xl p-6 border border-white/10 shadow-xl space-y-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/5 pb-4">
+                    <div class="space-y-0.5">
+                        <h3 class="text-base font-bold text-gray-100 flex items-center space-x-2">
+                            <i data-lucide="file-text" class="w-4 h-4 text-cyan-400"></i>
+                            <span>Interactive Dialogue Transcript</span>
+                        </h3>
+                        <p class="text-xs text-gray-400">Review transcription, edit translated dialogue lines before dubbing, and regenerate individual sentences.</p>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button id="btn-save-transcript" class="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-xs font-semibold text-white shadow transition flex items-center space-x-1.5">
+                            <i data-lucide="save" class="w-3.5 h-3.5"></i>
+                            <span>Save Edits</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Transcript Table -->
+                <div class="overflow-x-auto rounded-xl border border-white/5 bg-slate-900/40">
+                    <table class="w-full text-left text-xs border-collapse">
+                        <thead>
+                            <tr class="border-b border-white/10 bg-slate-900/80 text-gray-400 uppercase tracking-wider font-semibold">
+                                <th class="py-3 px-4 w-28">Speaker</th>
+                                <th class="py-3 px-4 w-28">Time</th>
+                                <th class="py-3 px-4">Original Dialogue</th>
+                                <th class="py-3 px-4">Translated Dialogue (Editable)</th>
+                                <th class="py-3 px-4 w-24 text-center">Status</th>
+                                <th class="py-3 px-4 w-32 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transcript-table-body" class="divide-y divide-white/5 text-gray-300">
+                            <!-- Dynamic Transcript Rows -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- SECTION 6: OUTPUT & COMPARISON (Section 16) -->
+            <div id="output-card" class="hidden glass-panel rounded-2xl p-6 border border-emerald-500/30 shadow-2xl space-y-6 bg-slate-900/70">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-white/10 pb-4 gap-4">
+                    <div class="space-y-0.5">
+                        <div class="flex items-center space-x-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+                            <h3 class="text-lg font-bold text-white">Dubbed Video Output Ready</h3>
+                        </div>
+                        <p class="text-xs text-gray-400">Compare original vs dubbed video side-by-side or download final broadcast-ready MP4.</p>
+                    </div>
+
+                    <div class="flex items-center space-x-2">
+                        <a id="btn-download-video" href="#" download class="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-xs font-bold text-white shadow-lg shadow-emerald-600/20 transition flex items-center space-x-2">
+                            <i data-lucide="download" class="w-4 h-4"></i>
+                            <span>Download Dubbed Video</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Side-by-Side Video Players -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Original -->
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between text-xs font-semibold text-gray-300">
+                            <span class="flex items-center space-x-1.5">
+                                <i data-lucide="film" class="w-3.5 h-3.5 text-gray-400"></i>
+                                <span>Original Video</span>
+                            </span>
+                            <span class="text-gray-400">Source Audio</span>
+                        </div>
+                        <div class="relative bg-black rounded-xl overflow-hidden aspect-video border border-white/10">
+                            <video id="compare-original-video" class="w-full h-full object-contain" controls></video>
+                        </div>
+                    </div>
+
+                    <!-- Dubbed Output -->
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between text-xs font-semibold text-emerald-300">
+                            <span class="flex items-center space-x-1.5">
+                                <i data-lucide="sparkles" class="w-3.5 h-3.5 text-emerald-400"></i>
+                                <span>Dubbed Video (DubFlow AI)</span>
+                            </span>
+                            <span class="text-emerald-400 font-mono">Mixed Soundtrack + Voices</span>
+                        </div>
+                        <div class="relative bg-black rounded-xl overflow-hidden aspect-video border border-emerald-500/30 shadow-lg shadow-emerald-950/40">
+                            <video id="compare-dubbed-video" class="w-full h-full object-contain" controls></video>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="border-t border-white/5 py-6 mt-12 text-center text-xs text-gray-500">
+        <p>DubFlow AI — Professional Multi-Speaker Video Dubbing SaaS • Powered by NVIDIA AI & Local PyTorch RTX A2000 Engine</p>
+    </footer>
+
+    <!-- MODAL: SYSTEM HEALTH DIAGNOSTICS (Section 27) -->
+    <div id="modal-diagnostics" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="glass-panel rounded-2xl max-w-xl w-full p-6 border border-white/10 shadow-2xl space-y-6 relative bg-slate-900">
+            <div class="flex items-center justify-between border-b border-white/10 pb-3">
+                <div class="flex items-center space-x-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
+                        <i data-lucide="cpu" class="w-4 h-4"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-bold text-white">System Diagnostics & Environment</h3>
+                        <p class="text-xs text-gray-400">Hardware acceleration, model configurations, and NVIDIA APIs</p>
+                    </div>
+                </div>
+                <button id="btn-close-diagnostics" class="text-gray-400 hover:text-white transition">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- Diagnostics Content List -->
+            <div id="diagnostics-list" class="space-y-3">
+                <div class="text-center py-6 text-xs text-gray-400">
+                    <i data-lucide="loader-2" class="w-6 h-6 mx-auto mb-2 text-indigo-400 animate-spin"></i>
+                    Testing system components...
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between border-t border-white/10 pt-4">
+                <button id="btn-run-diagnostic-test" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-xs font-semibold text-white transition flex items-center space-x-1.5">
+                    <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+                    <span>Run Test Again</span>
+                </button>
+                <button onclick="document.getElementById('modal-diagnostics').classList.add('hidden')" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-medium text-gray-300 transition">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: ADVANCED VOICE BROWSER (50+ VOICES) -->
+    <div id="modal-voice-browser" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="glass-panel rounded-2xl max-w-3xl w-full p-6 border border-indigo-500/30 shadow-2xl space-y-5 bg-slate-900/95 max-h-[90vh] flex flex-col">
+            <!-- Header -->
+            <div class="flex items-center justify-between border-b border-white/10 pb-4">
+                <div class="flex items-center space-x-3">
+                    <div class="w-9 h-9 rounded-xl bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400">
+                        <i data-lucide="sparkles" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center space-x-2">
+                            <h3 class="text-base font-bold text-white">Studio Neural Voice Library</h3>
+                            <span id="voice-browser-count-pill" class="px-2 py-0.5 rounded-full text-xs font-semibold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">50+ Voices</span>
+                        </div>
+                        <p class="text-xs text-gray-400">Select an authentic native specialist voice for your speaker</p>
+                    </div>
+                </div>
+                <button onclick="closeVoiceBrowser()" class="text-gray-400 hover:text-white transition p-1.5 rounded-lg hover:bg-white/5">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- Filters & Search Toolbar -->
+            <div class="space-y-3 bg-slate-950/60 p-3.5 rounded-xl border border-white/5">
+                <!-- Search Box -->
+                <div class="relative">
+                    <i data-lucide="search" class="w-4 h-4 text-gray-400 absolute left-3 top-3"></i>
+                    <input type="text" id="voice-search-input" placeholder="Search voices by name, country, dialect, or style..." class="glass-input w-full rounded-xl pl-9 pr-4 py-2 text-xs text-white placeholder-gray-500">
+                </div>
+
+                <!-- Gender & Dialect Filter Controls -->
+                <div class="flex flex-wrap items-center justify-between gap-2 pt-1">
+                    <!-- Gender Filter Pills -->
+                    <div class="flex items-center space-x-1.5 bg-slate-900 p-1 rounded-lg border border-white/5" id="gender-filter-group">
+                        <button type="button" data-gender="all" class="voice-gender-btn px-3 py-1 rounded-md text-xs font-semibold bg-indigo-600 text-white transition">All</button>
+                        <button type="button" data-gender="Male" class="voice-gender-btn px-3 py-1 rounded-md text-xs font-medium text-gray-400 hover:text-white transition">👨 Male</button>
+                        <button type="button" data-gender="Female" class="voice-gender-btn px-3 py-1 rounded-md text-xs font-medium text-gray-400 hover:text-white transition">👩 Female</button>
+                    </div>
+
+                    <!-- Dialect/Region Select -->
+                    <div class="flex items-center space-x-2">
+                        <span class="text-xs text-gray-400">Region / Dialect:</span>
+                        <select id="voice-dialect-filter" class="glass-input rounded-lg px-2.5 py-1 text-xs text-gray-200">
+                            <option value="all">All Regions & Dialects</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scrollable Voice Grid -->
+            <div id="voice-browser-grid" class="flex-1 overflow-y-auto pr-1 grid grid-cols-1 md:grid-cols-2 gap-3 min-h-[300px] max-h-[440px]">
+                <!-- Dynamic voice cards rendered here -->
+            </div>
+
+            <!-- Footer -->
+            <div class="flex items-center justify-between border-t border-white/10 pt-3 text-xs text-gray-400">
+                <span id="voice-browser-status">Click preview to hear voice sample</span>
+                <button onclick="closeVoiceBrowser()" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-medium text-gray-300">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: SPEAKER RENAME -->
+    <div id="modal-speaker-rename" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="glass-panel rounded-2xl max-w-sm w-full p-5 border border-white/10 shadow-2xl space-y-4 bg-slate-900">
+            <h3 class="text-sm font-bold text-white flex items-center space-x-2">
+                <i data-lucide="user-pen" class="w-4 h-4 text-violet-400"></i>
+                <span>Rename Speaker</span>
+            </h3>
+            <input type="hidden" id="rename-speaker-id">
+            <div>
+                <label class="block text-xs text-gray-400 mb-1">Speaker Display Name</label>
+                <input type="text" id="rename-speaker-input" placeholder="e.g. John, Sara, Narrator" class="glass-input w-full rounded-lg px-3 py-2 text-xs text-white">
+            </div>
+            <div class="flex justify-end space-x-2 pt-2">
+                <button onclick="document.getElementById('modal-speaker-rename').classList.add('hidden')" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-medium text-gray-300">
+                    Cancel
+                </button>
+                <button id="btn-save-speaker-name" class="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-xs font-semibold text-white">
+                    Save Name
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/app.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

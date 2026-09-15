@@ -1,0 +1,99 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+    --bg-main: #090D16;
+    --bg-card: rgba(17, 24, 39, 0.7);
+    --border-card: rgba(255, 255, 255, 0.08);
+    --primary: #6366F1;
+    --primary-glow: rgba(99, 102, 241, 0.25);
+    --accent: #8B5CF6;
+    --cyan: #06B6D4;
+    --emerald: #10B981;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background-color: var(--bg-main);
+    color: #F3F4F6;
+    min-height: 100vh;
+}
+
+/* Custom Glassmorphism */
+.glass-panel {
+    background: var(--bg-card);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--border-card);
+}
+
+.glass-panel:hover {
+    border-color: rgba(255, 255, 255, 0.14);
+}
+
+.glass-input {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #F9FAFB;
+    transition: all 0.2s ease;
+}
+
+.glass-input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px var(--primary-glow);
+}
+
+/* Glowing Elements */
+.glow-primary {
+    box-shadow: 0 0 20px -3px var(--primary-glow);
+}
+
+.glow-text {
+    text-shadow: 0 0 12px rgba(99, 102, 241, 0.5);
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(15, 23, 42, 0.5);
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.18);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* Code & Monospace font */
+.font-mono {
+    font-family: 'JetBrains Mono', monospace;
+}
+
+/* Pulse animation for active processing */
+@keyframes soft-pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.75; transform: scale(0.98); }
+}
+
+.animate-soft-pulse {
+    animation: soft-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Range input slider styling */
+input[type="range"] {
+    accent-color: #6366F1;
+}
+
+/* Transitions */
+.tab-active {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2));
+    border-color: rgba(99, 102, 241, 0.5);
+    color: #EEF2FF;
+}
